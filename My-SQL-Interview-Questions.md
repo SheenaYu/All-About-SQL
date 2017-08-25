@@ -1,14 +1,14 @@
 ###### Prepared by Sheena Yu
 
-[LinkedIn SQL](#Scenario-1)
+[Scenario 1](#Scenario-1)
 
-[Consulting Firm SQL](#Scenario-2)
+[Scenario 2](#Scenario-2)
 
-[Calculate Median Price](#Scenario-3)
+[Scenario 3](#Scenario-3)
 
-[App User Analysis](#Scenario-4)
+[Scenario 4](#Scenario-4)
 
-[Active Customer Analysis](#Scenario-5)
+[Scenario 5](#Scenario-5)
 
 # Scenario 1
 
