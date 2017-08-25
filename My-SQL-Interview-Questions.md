@@ -1,16 +1,16 @@
 ###### Prepared by Sheena Yu
 
-[LinkedIn SQL](####Scenario-1)
+[LinkedIn SQL](#Scenario-1)
 
-[Consulting Firm SQL](####Scenario-2)
+[Consulting Firm SQL](#Scenario-2)
 
-[Calculate Median Price](####Scenario-3)
+[Calculate Median Price](#Scenario-3)
 
-[App User Analysis](####Scenario-4)
+[App User Analysis](#Scenario-4)
 
-[Active Customer Analysis](####Scenario-5)
+[Active Customer Analysis](#Scenario-5)
 
-#### Scenario 1
+# Scenario 1
 
 | id | company | year_start |
 |-----|------|-------|
@@ -68,7 +68,7 @@ AND c1.id NOT IN (SELECT c3.id FROM linkedin c3
 
 * * *
 
-#### Scenario 2
+# Scenario 2
 
 There are four tab delimited files in the dataset:
 
@@ -186,7 +186,7 @@ order by cor.correlation desc
 
 * * *
 
-#### Scenario 3
+# Scenario 3
 
 |id|price|
 |---|---|
@@ -222,7 +222,7 @@ limit 1
 
 * * *
 
-#### Scenario 4
+# Scenario 4
 
 **Table user_action**
 
@@ -364,7 +364,7 @@ group by t1.appid
 
 * * *
 
-####Scenario-5
+#Scenario-5
 
 |id|start_date|end_date|
 |---|---|---|
