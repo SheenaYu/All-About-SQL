@@ -12,6 +12,8 @@
 
 # Scenario 1
 
+**Table Name: linkedin**
+
 | id | company | year_start |
 |-----|------|-------|
 |1 | Microsoft | 2000 |
@@ -27,25 +29,8 @@
 |4| Microsoft | 2013 |
 |4| Google | 2016 |
 
-1. How many members ever moved from Microsoft to Google? (both member #1, #2, #4 count)
 
 ```sql
-INSERT INTO public.linkedin(id, company, year_start)
-VALUES (1, 'Microsoft', 2000)
-(1, 'Google', 2006),
-(1, 'Facebook', 2012),
-(2, 'Microsoft', 2001),
-(2, 'Oracle', 2004),
-(2, 'Google', 2007),
-(3, 'Uber', 2009),
-(3, 'Google', 2012),
-(4, 'Yelp', 2008),
-(4, 'Airbnb', 2011),
-(4, 'Microsoft', 2013),
-(4, 'Google', 2016);
-
-
-select * from linkedin
 
 -- how many members ever moved from Microsoft to Google? (both member #1, #2, #4 count)
 select count(*) from linkedin a, linkedin b
