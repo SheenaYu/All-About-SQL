@@ -39,15 +39,15 @@ and a.company = 'Microsoft' and b.company = 'Google'
 and a.year_start < b.year_start
 
 
--- how many members moved directly from Microsoft to Google? 
+-- how many members moved directly from Microsoft to Google?
 -- (Member 2 does not count since Microsoft -> Oracle -> Google)
 
 SELECT count(*) FROM linkedin c1, linkedin c2
 WHERE c1.id = c2.id
-AND c1.Company = 'Microsoft' 
+AND c1.Company = 'Microsoft'
 AND c2.Company = 'Google'
 AND c1.Year_Start < c2.Year_Start
-AND c1.id NOT IN (SELECT c3.id FROM linkedin c3 
+AND c1.id NOT IN (SELECT c3.id FROM linkedin c3
                   WHERE c3.id = c1.id AND c3.Year_Start > c1.Year_Start AND c3.Year_Start < c2.Year_Start)
 ```
 
@@ -103,25 +103,25 @@ You may use any tools available to you to analyze this dataset and answer the fo
 ```sql
 /* What is the average cost of treating a patient for "Low back pain" ? */
 
-select avg(t1.cost) from t1 
-left join t2 
+select avg(t1.cost) from t1
+left join t2
 on t1.disease_id = t2.disease_id
 where t2.disease_name = 'Low back pain'
 
 /* How many doctors treat patients in the 10424 zip code ?*/
 
-select count(distinct t1.doctor_id) from t1 
+select count(distinct t1.doctor_id) from t1
 left join t3 on t1.patient_id = t3.patient_id
 where t3.patient_zip = '10424'
 
-/* If doctors are ranked by their average cost of treating a patient with 
-"Low back pain", at what average cost does a doctor at the 75th percentile treat 
+/* If doctors are ranked by their average cost of treating a patient with
+"Low back pain", at what average cost does a doctor at the 75th percentile treat
 a patient with "Low back pain" ? */
 
-create view ranked_cost as 
+create view ranked_cost as
 (select avg(t1.cost) as avg_cost, t1.doctor_id
-from t1  
-left join t2 
+from t1
+left join t2
 on t1.disease_id = t2.disease_id
 where t2.disease_name = 'Low back pain'
 group by t1.doctor_id
@@ -130,39 +130,39 @@ order by 1)
 select percentile_disc(0.75) within group (order by avg_cost)
 from ranked_cost
 
-/* Doctors with a doctor_score of 1 or less are considered efficient. 
-Which disease (specify the disease_name) has the highest percentage of patients 
+/* Doctors with a doctor_score of 1 or less are considered efficient.
+Which disease (specify the disease_name) has the highest percentage of patients
 being treated by efficient doctors ? */
 
-select e.disease_name, 
-       sum(e.is_efficient), count(e.patient_id), 
+select e.disease_name,
+       sum(e.is_efficient), count(e.patient_id),
        (sum(e.is_efficient)*1.0) / (count(e.patient_id)*1.0) as ratio
 from
-	(select t1.patient_id, t1.disease_id, t2.disease_name, 
-	 (case when t4.doctor_score <= 1 then 1 else 0 end) as is_efficient 
-	from t1 
+	(select t1.patient_id, t1.disease_id, t2.disease_name,
+	 (case when t4.doctor_score <= 1 then 1 else 0 end) as is_efficient
+	from t1
 	left join t4 on t1.doctor_id = t4.doctor_id
 	left join t2 on t1.disease_id = t2.disease_id) as e
 group by e.disease_id, e.disease_name
 order by ratio desc
 
-/* For which disease (specify the disease_name) is the doctor_score most positively 
+/* For which disease (specify the disease_name) is the doctor_score most positively
 correlated with the average cost of a doctor treating a patient with that disease ? */
 
 create view disease_corr as
 select cost.*, t4.doctor_score
 from
-	(select t1.disease_id, t1.doctor_id, 
-            avg(t1.cost) as avg_cost_per_disease from t1 
+	(select t1.disease_id, t1.doctor_id,
+            avg(t1.cost) as avg_cost_per_disease from t1
 	group by t1.doctor_id, t1.disease_id
 	) cost
 left join t4 on cost.doctor_id = t4.doctor_id
 order by cost.disease_id
 
 
-select t2.disease_name, cor.correlation 
-from 
-	(select disease_id, corr(avg_cost_per_disease, doctor_score) as correlation 
+select t2.disease_name, cor.correlation
+from
+	(select disease_id, corr(avg_cost_per_disease, doctor_score) as correlation
 	from disease_corr
 	group by disease_id) cor
 left join t2 on cor.disease_id = t2.disease_id
@@ -186,7 +186,7 @@ order by cor.correlation desc
 
 ```sql
 -- Median calculation
-create view ordered_purchases as 
+create view ordered_purchases as
     (select price,
       		row_number() over (order by price) as row_id,
       		(select count(1) from price) as ct
@@ -275,10 +275,10 @@ GROUP BY date
 HAVING CAST(date as DATE) BETWEEN '2016-11-06' and '2016-11-12'
 ORDER BY date
 
-/* Question 2 - 
-We have another table that records the OS version of each user. 
-The columns are: userid (STRING), OS (STRING). 
-Update the SQL query/code from Question 1 to get us the DAU per OS 
+/* Question 2 -
+We have another table that records the OS version of each user.
+The columns are: userid (STRING), OS (STRING).
+Update the SQL query/code from Question 1 to get us the DAU per OS
 (Assume we only have Android and iOS) */
 
 SELECT a.date, o.OS, COUNT(DISTINCT a.userid) as DAU FROM user_action a
@@ -287,30 +287,30 @@ GROUP BY a.date, o.OS
 HAVING CAST(a.date as DATE) BETWEEN '2016-11-06' AND '2016-11-12'
 ORDER BY a.date
 
-/* Question 3 - Using the sample table from Question 1, 
-Get list of all users who have: done at least 5 unique events AND done "purchase" at least once 
-AND done "level_up" at least once And for each user, 
+/* Question 3 - Using the sample table from Question 1,
+Get list of all users who have: done at least 5 unique events AND done "purchase" at least once
+AND done "level_up" at least once And for each user,
 show all unique events that they have done. */
 
 create view user_action_conditions as
 select userid, action,
        (case when action ='purchase' then 1 else 0 end) as purchase,
        (case when action ='level_up' then 1 else 0 end) as level_up
-from user_action 
+from user_action
 
 select distinct userid, action
 from user_action
 where userid in (select userid
-                 from user_action_conditions 
+                 from user_action_conditions
                  group by userid
-                 having count(distinct action) >= 5 
-                        and sum(purchase) >= 1 
+                 having count(distinct action) >= 5
+                        and sum(purchase) >= 1
                         and sum(level_up) >= 1)
 
-/* Question 4 - Imagine our customer has a music app and every time a user plays a song, 
-we add a row of data in our database. 
-The columns are: userid (STRING), song_name (STRING), timestamp (TIMESTAMP). 
-So if a user played 100 songs, we would have 100 rows for this one user. 
+/* Question 4 - Imagine our customer has a music app and every time a user plays a song,
+we add a row of data in our database.
+The columns are: userid (STRING), song_name (STRING), timestamp (TIMESTAMP).
+So if a user played 100 songs, we would have 100 rows for this one user.
 Write a query that would tell us the top 3 played songs per user. */
 
 SELECT summary.*
@@ -318,20 +318,20 @@ FROM
     (
     SELECT t.userid, t.song_name,
             ROW_NUMBER() OVER (PARTITION BY t.userid ORDER BY t.times_to_play desc) as song_rank
-    FROM 
+    FROM
         (select userid, song_name, count(*) as times_to_play from song
          group by userid, song_name) t
     ) summary
 WHERE summary.song_rank <= 3
 
-/* Question 5 - In our backend logs, we record every API call that we receive from our customers. 
-The columns that we have are: app_id (STRING), latency (float). 
-Find the average latency of the top 5% slowest API requests (based on latency) per app. 
+/* Question 5 - In our backend logs, we record every API call that we receive from our customers.
+The columns that we have are: app_id (STRING), latency (float).
+Find the average latency of the top 5% slowest API requests (based on latency) per app.
 In other words, for each app, find the 5% slowest API requests and get the average of the latency. */
 
 
 create view ordered_app_log as
-(select *, row_number() over (partition by appid order by latency) as num 
+(select *, row_number() over (partition by appid order by latency) as num
 from app_log)
 
 
@@ -370,15 +370,15 @@ group by t1.appid
 
 ```sql
 
-/* Given the app user table, calculate the number of new customers and the number 
+/* Given the app user table, calculate the number of new customers and the number
 of churned customers per month. */
 
-select s.start_month as months, s.new_customers, e.churned_customers  
+select s.start_month as months, s.new_customers, e.churned_customers
 from
 (select date_trunc('month', start_date) as start_month, count(id) as new_customers
 from persons
 group by start_month) as s
-left join 
+left join
 (select date_trunc('month', end_date) as end_month, count(id) as churned_customers
 from persons
 group by end_month) as e
@@ -388,13 +388,13 @@ order by s.start_month
 /* How many active users per month? */
 
 create view customers_table as
-(select s.start_month as months, 
-       coalesce(s.new_customers, 0), coalesce(e.churned_customers, 0)  
+(select s.start_month as months,
+       coalesce(s.new_customers, 0), coalesce(e.churned_customers, 0)
 from
 (select date_trunc('month', start_date) as start_month, count(id) as new_customers
 from persons
 group by start_month) as s
-left join 
+left join
 (select date_trunc('month', end_date) as end_month, count(id) as churned_customers
 from persons
 group by end_month) as e
@@ -402,7 +402,7 @@ on s.start_month = e.end_month
 order by s.start_month)
 
 -- first approach: self join
-select a.months, 
+select a.months,
        sum(b.new_customers - b.churned_customers) as active_customers
 from customers_table a
 join customers_table b
@@ -411,10 +411,33 @@ group by a.months
 order by a.months
 
 -- second approach: window functions
-select months, 
+select months,
        sum(new_customers - churned_customers) over (order by months rows unbounded preceding) as active_customers
 from customers_table
 
 
 ```
 
+# Scenario 6
+
+Given three tables, user_dimension (user_id and account_id), account_dimension (account_id and paying_customer), and download_facts (date, user_id, and downloads), find the average number of downloads for free vs paying customers broken out by day.
+
+```sql
+select date,
+       (case paying_accounts when 0 then "free" else "paying" end) as customer_status,
+       avg(downloads) as avg_downloads
+from
+
+(select user_id,
+       sum(case paying_customer when 'yes' then 1 else 0 end) as paying_accounts
+from user_dimension a join account_dimension b
+on a.account_id = b.account_id
+group by a.user_id) t1
+join download_facts t2
+on t1.user_id = t2.user_id
+
+group by date, customer_status
+
+
+
+```
